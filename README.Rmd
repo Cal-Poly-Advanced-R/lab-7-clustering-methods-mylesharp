@@ -18,7 +18,14 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of clust431 is to ...
+
+The goal of clust431 is to provide a mini-package that implements basic k-means and hierarchical clustering algorithms. These functions aim to facilitate clustering analysis by allowing users to easily perform clustering on their data without relying on dedicated clustering functions like kmeans() or hclust(). The package offers two main functions:
+
+k_means(): This function performs k-means clustering on the input data. Users can choose the value of k, and the function randomly selects k observations from the data as the initial cluster centroids. The function also provides an option to automatically perform Principal Component Analysis (PCA) on the data before clustering, using only the first 2 dimensions. The output of this function includes the cluster assignments for each observation and the total sum of squares.
+
+hier_clust(): This function implements agglomerative hierarchical clustering on the input data. It computes the distance matrix and performs hierarchical clustering using the hclust() function. The function cuts the hierarchical tree at a certain height to obtain cluster assignments. The output of this function includes the cluster assignments for each observation.
+
+By providing these clustering functions in the clust431 package, users can easily apply k-means and hierarchical clustering algorithms to their data, enabling them to gain insights and identify patterns within their datasets.
 
 ## Installation
 
