@@ -38,4 +38,3 @@ hier_clust <- function(data) {
 
 
 
-
