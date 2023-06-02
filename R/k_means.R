@@ -1,36 +1,65 @@
+#' Perform k means clustering on data
+#'
+#' @param dat The data
+#' @parm k Number of clusters
+#'
+#' @return A vector of cluster levels in order of data set rows
+#'
+#' @import dplyr Rfast
+#'
+
 
 k_means <- function(dat, k, pca = FALSE) {
-        if (pca) {
-        pc <- princomp(dat)
-        dat <- as.matrix(pc$scores[, 1:2])
-        }
+
+    #stop if k is not a positive number
+    if(!is.numeric(k)||k<=0) {
+        stop("k must be a positive number")
+    }
 
 
-    set.seed(123)
-    n <- nrow(dat)
-    old_centers <- dat[sample(1:n, k), ]
+    for (col in names(dat)) {
+        if (is.factor(dat[[col]]) || is.character(dat[[col]])) {
+            dat <- dat %>% select(-col)
+            }
+    }
 
-    cluster <- rep(NA, n)
-    tss <- 0
 
-    while (TRUE) {
-        for (i in 1:n) {
-            euclid <- sqrt(rowSums((dat[i, ] - old_centers)^2))
-            cluster[i] <- which.min(euclid)
-        }
+    if (pca) {
+        pca_data <- princomp(data, cor = TRUE)
+        data <- predict(pca_data)
+    }
 
-        new_centers <- tapply(dat, cluster, colMeans)
 
-        #convergene
-        if (identical(old_centers, new_centers)) {
+    dat_m <- dat %>%
+        as.matrix()
+
+    olds_centriods <- dat_m %>%
+        sample_n(k) %>%
+        as.matrix()
+
+
+    while(TRUE) {
+        dists <- dist(dat_m, method = "euclidean")
+        cluster_assignments <- apply(dists, 1, which.min)
+
+        new_centroids <- dat %>%
+            mutate(clust = cluster_assignments) %>%
+            group_by(clust) %>%
+            summarize_all(mean) %>%
+            select(-clust) %>%
+            as.matrix()
+
+
+        if (all(olds_centroids == new_centroids)) {
             break
         }
 
-        tss <- sum(sapply(1:k, function(j) sum((dat[cluster == j, ] - new_centers[j, ])^2)))
-
-        old_centers <- new_centers
+        olds_centriods <- new_centroids
     }
 
-    result <- list(cluster, tss)
-    return(result)
+
+    return(cluster_assignments)
+
 }
+
+
