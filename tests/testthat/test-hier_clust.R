@@ -1,3 +1,5 @@
 test_that("hier_clust works", {
-  hier_clust(iris, 3)
+    iris %>%
+        dplyr::select(-Species) %>%
+        hier_clust(k = 3)
 })
